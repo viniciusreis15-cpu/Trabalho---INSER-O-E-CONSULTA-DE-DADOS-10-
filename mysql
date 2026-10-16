@@ -1,0 +1,113 @@
+CREATE DATABASE IF NOT EXISTS curso_certo 
+  DEFAULT CHARACTER SET utf8mb4 
+  COLLATE utf8mb4_general_ci;
+
+USE curso_certo;
+
+-- ========== CRIAÇÃO DAS TABELAS ==========
+
+CREATE TABLE IF NOT EXISTS usuario (
+  id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(30) NOT NULL,
+  CPF VARCHAR(14) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  telefone VARCHAR(20),
+  tipo_de_usuario ENUM('admin', 'convencional')
+) CHARACTER SET utf8mb4;
+
+DESC usuario;
+
+CREATE TABLE IF NOT EXISTS matricula (
+  id_matricula INT PRIMARY KEY AUTO_INCREMENT,
+  data_inicio DATE,
+  data_termino DATE,
+  status_matricula BOOLEAN,
+  id_usuario INT,
+  FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+) CHARACTER SET utf8mb4;
+
+DESC matricula;
+
+CREATE TABLE IF NOT EXISTS curso (
+  id_curso INT PRIMARY KEY AUTO_INCREMENT,
+  area_curso VARCHAR(40) NOT NULL,
+  nome_curso VARCHAR(40) NOT NULL,
+  carga_horaria INT,
+  id_matricula INT,
+  FOREIGN KEY (id_matricula) REFERENCES matricula(id_matricula)
+) CHARACTER SET utf8mb4;
+
+DESC curso;
+
+CREATE TABLE IF NOT EXISTS categoria (
+  id_categoria INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(30) NOT NULL,
+  id_curso INT,
+  FOREIGN KEY (id_curso) REFERENCES curso(id_curso)
+) CHARACTER SET utf8mb4;
+
+DESC categoria;
+
+CREATE TABLE IF NOT EXISTS video (
+  id_video INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(40) NOT NULL,
+  id_curso INT,
+  FOREIGN KEY (id_curso) REFERENCES curso(id_curso)
+) CHARACTER SET utf8mb4;
+
+DESC video;
+
+-- ========== 1. INSERIR REGISTROS ==========
+
+-- 1º: usuario (não depende de ninguém)
+INSERT INTO usuario (nome, CPF, email, telefone, tipo_de_usuario) VALUES
+  ('Ana Souza',      '111.222.333-44', 'ana.souza@email.com',      '(41) 99999-0001', 'admin'),
+  ('Carlos Lima',    '222.333.444-55', 'carlos.lima@email.com',    '(41) 99999-0002', 'convencional'),
+  ('Beatriz Alves',  '333.444.555-66', 'beatriz.alves@email.com',  '(41) 99999-0003', 'convencional'),
+  ('Diego Santos',   '444.555.666-77', 'diego.santos@email.com',   '(41) 99999-0004', 'convencional'),
+  ('Fernanda Costa', '555.666.777-88', 'fernanda.costa@email.com', '(41) 99999-0005', 'admin'),
+  ('Paulo Mendes',   '666.777.888-99', 'paulo.mendes@email.com',   '(41) 99999-0006', 'convencional');
+
+-- 2º: matricula (depende de usuario)
+INSERT INTO matricula (data_inicio, data_termino, status_matricula, id_usuario) VALUES
+  ('2026-01-10', '2026-06-10', TRUE,  1),
+  ('2026-02-01', '2026-07-01', TRUE,  2),
+  ('2026-02-15', '2026-08-15', FALSE, 3),
+  ('2026-03-05', '2026-09-05', TRUE,  4),
+  ('2026-04-12', '2026-10-12', TRUE,  5),
+  ('2026-05-20', '2026-11-20', FALSE, 6);
+
+-- 3º: curso (depende de matricula)
+INSERT INTO curso (area_curso, nome_curso, carga_horaria, id_matricula) VALUES
+  ('Gestão',                'Administração',            80,  1),
+  ('Banco de Dados',        'MySQL',                    60,  2),
+  ('Programação',           'Java',                     120, 3),
+  ('Programação',           'Python',                   100, 4),
+  ('Desenvolvimento Web',   'HTML e CSS',               40,  5),
+  ('Lógica de Programação', 'Algoritmos',               50,  6);
+
+-- 4º: categoria (depende de curso)
+INSERT INTO categoria (nome, id_curso) VALUES
+  ('Negócios',       1),
+  ('Dados',          2),
+  ('Back-end',       3),
+  ('Back-end',       4),
+  ('Front-end',      5),
+  ('Fundamentos',    6);
+
+-- 5º: video (depende de curso)
+INSERT INTO video (nome, id_curso) VALUES
+  ('Introdução à Administração',  1),
+  ('Criando o primeiro banco',    2),
+  ('Orientação a Objetos',        3),
+  ('Variáveis e tipos em Python', 4),
+  ('Estilizando com CSS',         5),
+  ('Estruturas de repetição',     6);
+
+-- ========== 2. CONSULTAR TABELAS ==========
+
+SELECT * FROM usuario;
+SELECT * FROM matricula;
+SELECT * FROM curso;
+SELECT * FROM categoria;
+SELECT * FROM video;
